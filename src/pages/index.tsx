@@ -32,47 +32,58 @@ type IndexPageProps = {
     allMarkdownRemark: {
       edges: PostListItemType[]
     }
-    file?: {
-      childImageSharp?: {
+    file: {
+      childImageSharp: {
         gatsbyImageData: IGatsbyImageData
       }
-      publicURL?: string
-    } | null
+      publicURL: string
+    }
   }
 }
 
 const IndexPage: FunctionComponent<IndexPageProps> = function ({
   location: { search },
-  data,
-}) {
-  const {
+  data: {
     site: {
       siteMetadata: { title, description, siteUrl },
     },
     allMarkdownRemark: { edges },
-    file,
-  } = data
-  const gatsbyImageData = file?.childImageSharp?.gatsbyImageData
-  const publicURL = file?.publicURL || ''
+    file: {
+      childImageSharp: { gatsbyImageData },
+      publicURL,
+    },
+  },
+}) {
   const parsed: ParsedQuery<string> = queryString.parse(search)
   const selectedCategory: string =
     typeof parsed.category !== 'string' || !parsed.category
       ? 'All'
       : parsed.category
 
-  const categoryList = useMemo(() => {
-    return edges.reduce((list: Record<string, number>, {
-      node: { frontmatter: { categories } },
-    }: PostType) => {
-      categories.forEach(category => {
-        if (list[category] === undefined) list[category] = 1
-        else list[category]++
-      })
+  const categoryList = useMemo(
+    () =>
+      edges.reduce(
+        (
+          list: CategoryListProps['categoryList'],
+          {
+            node: {
+              frontmatter: { categories },
+            },
+          }: PostType,
+        ) => {
+          categories.forEach(category => {
+            if (list[category] === undefined) list[category] = 1;
+            else list[category]++;
+          });
 
-      list['All']++
-      return list
-    }, { All: 0 } as Record<string, number>)
-  }, [edges])
+          list['All']++;
+
+          return list;
+        },
+        { All: 0 },
+      ),
+    [],
+  )
 
    return (
     <Template
@@ -81,7 +92,7 @@ const IndexPage: FunctionComponent<IndexPageProps> = function ({
       url={siteUrl}
       image={publicURL}
     >
-      {gatsbyImageData && <Introduction profileImage={gatsbyImageData} />}
+      <Introduction profileImage={gatsbyImageData} />
       <CategoryList
         selectedCategory={selectedCategory}
         categoryList={categoryList}
