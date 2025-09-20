@@ -3,74 +3,64 @@ import { graphql } from 'gatsby'
 import Template from 'components/Common/Template'
 import PostHead from 'components/Post/PostHead'
 import PostContent from 'components/Post/PostContent'
-import CommentWidget from 'components/Post/CommentWidget'
 
 type PostTemplateProps = {
   data: {
-    allMarkdownRemark: {
-      edges: PostPageItemType[]
-    }
-  }
-  location: {
-    href: string
+    markdownRemark?: {
+      html: string
+      frontmatter: {
+        title: string
+        summary?: string
+        date?: string
+        categories?: string[]
+        thumbnail?: {
+          childImageSharp?: {
+            gatsbyImageData: any
+          }
+        }
+      }
+    } | null
   }
 }
 
-const PostTemplate: FunctionComponent<PostTemplateProps> = function ({
-  data: {
-    allMarkdownRemark: { edges },
-  },
-  location: { href },
-}) {
-  const {
-    node: {
-      html,
-      frontmatter: {
-        title,
-        summary,
-        date,
-        categories,
-        thumbnail: {
-          childImageSharp: { gatsbyImageData },
-          publicURL,
-        },
-      },
-    },
-  } = edges[0];
+const PostTemplate: FunctionComponent<PostTemplateProps> = function ({ data }) {
+  const post = data?.markdownRemark
+  if (!post) return null
+
+  const { html, frontmatter } = post
+  const title = frontmatter?.title ?? ''
+  const date = frontmatter?.date || ''
+  const categories = frontmatter?.categories ?? []
+  const thumbnailImg = frontmatter?.thumbnail?.childImageSharp?.gatsbyImageData
 
   return (
-    <Template title={title} description={summary} url={href} image={publicURL}>
+    <Template>
       <PostHead
         title={title}
         date={date}
         categories={categories}
-        thumbnail={gatsbyImageData}
+        thumbnail={thumbnailImg}
       />
       <PostContent html={html} />
-      <CommentWidget />
     </Template>
   )
 }
 
+
 export default PostTemplate
 
 export const queryMarkdownDataBySlug = graphql`
-  query queryMarkdownDataBySlug($slug: String) {
-    allMarkdownRemark(filter: { fields: { slug: { eq: $slug } } }) {
-      edges {
-        node {
-          html
-          frontmatter {
-            title
-            summary
-            date(formatString: "YYYY.MM.DD.")
-            categories
-            thumbnail {
-              childImageSharp {
-                gatsbyImageData
-              }
-              publicURL
-            }
+  query PostBySlug($slug: String!) {
+    markdownRemark(fields: { slug: { eq: $slug } }) {
+      html
+      frontmatter {
+        title
+        summary
+        date(formatString: "YYYY.MM.DD.")
+        categories
+        thumbnail {
+          childImageSharp {
+            gatsbyImageData(width: 1200)
           }
         }
       }
