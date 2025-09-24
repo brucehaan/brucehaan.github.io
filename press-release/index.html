@@ -11,37 +11,14 @@
 <p>고객 입장에선 주문이 실패하지 않고, 빨리 끝나고, 혜택이 제대로 적용되는 것입니다.</p>
 <p>장바구니에서 주문 버튼을 누른 순간부터 여러 검사가 동시에 일어나 충돌이 나기 쉽습니다(쿠폰, 재고, 본인확인 등). 복잡하면 느려지고, 때로는 실패합니다.</p>
 <p>재고·결제 가능 여부 등 동시에 꼭 필요한 검사만 먼저 하고, 나머지는 뒤에서 차분히 처리합니다. “바로 안 해도 되는 일은 메모해 두었다가 줄 세워(Queue) 처리”하는 방식입니다.</p>
+<p>쿠폰/프로모션/한도처럼 규칙이 많은 건 한 곳(정책 엔진) 에서만 계산하게 만들어 앞뒤가 다르게 나오지 않게 합니다.</p>
+<p>예시로는, 같은 쿠폰을 두 번 적용하려 하면 “이미 적용된 혜택입니다”라고 안내하고, 고객이 무엇을 하면 되는지 버튼(다시 시도/다른 수단 선택)을 함께 보여줍니다.</p>
+<p>이에 대한 지표로, 주문 성공률, 장바구니에서 주문까지의 전환율, 정책 충돌률, 혜택 불일치 등의 고객센터 문의(VoC) 등이 있습니다.</p>
 <h4>Q2. 왜 정수님이 적임자인가요?</h4>
-<p>중복·동시성 문제를 해결해 본 경험이 있어, 주문에도 빠르게 적응할 수 있습니다.</p>
+<p>중복·동시성 문제를 해결해 본 경험으로, 주문에도 빠르게 적응할 수 있습니다.</p>
 <p>중복 이슈 방지 + DB 유효성 검증을 통해 **다중 호출 상황에서도 사고 0%**를 달성했습니다. 이러한 경험을 바탕으로 주문 생성의 멱등성으로 적용할 수 있습니다.</p>
-<h4>Q3. 대규모 트래픽에서 주문을 어떻게 안전하게 생성하나요?</h4>
-<p>경계를 명확히 하고,  + 비동기 이벤트 + 수평 확장입니다.</p>
-<p>주문 생성 트랜잭션 경계를 명확히 하고, Outbox 패턴/이벤트 발행으로 후속 처리를 분리합니다.</p>
-<p>Kafka, 읽기·쓰기 분리, 캐시·큐로 피크 타임 P95/P99 지연을 관리합니다. (스택/문화 근거)</p>
-<h4>Q4. 정책 충돌(쿠폰·재고·조건) 같은 복잡성은 어떻게 다루나요?</h4>
-<p>결론: 정책 카탈로그화 + 계약 테스트 + 피처 플래그입니다.</p>
-<p>정책을 카탈로그로 정리하고 계약 테스트로 상호작용을 고정, Feature Flag로 점진적 전환을 운영합니다. (팀이 지향하는 “주도적 설계·실험 문화”와 부합)</p>
-<p>무신사채용공고</p>
-<p>Q5. 초기 90일 로드맵은 무엇인가요?</p>
-<p>결론: 온보딩→안정화→가시화 3단계입니다.</p>
-<p>0–30일: 도메인/정책 맵(카탈로그) 작성, 핵심 KPI(주문 성공률, 중복 주문율, 주문 생성 P95) 현황 측정.</p>
-<p>30–60일: Idempotency 키·재시도/백오프·사유 라벨링 표준을 주문 경계에 적용.</p>
-<p>60–90일: 주문 퍼널 실시간 대시보드(원인별 실패율·중복 탐지) 오픈, 런북/회고로 개선 고정.</p>
-<p>Q6. 어떤 기술 스택과 문화에 맞춰 실행하나요?</p>
-<p>결론: Java/Spring·JPA/QueryDSL·MySQL·Redis·Kafka·K8s/Docker + 주도적 설계·AI 효율화입니다.</p>
-<p>공고 명시 스택과 주도적 설계/실험, AI 기반 효율화 문화에 맞춰 설계·운영합니다.</p>
-<p>무신사채용공고</p>
-<p>Q7. 관측성과 장애 대응은 어떻게 준비합니까?</p>
-<p>결론: SLO + 원인 라벨링 + 분산 트레이싱입니다.</p>
-<p>주문 생성 SLO/에러 버짓 수립, 실패 사유 라벨링 표준화, 분산 트레이싱/상관 로그로 MTTR을 단축합니다. (AI로 로그 요약/이상 탐지 가속)</p>
-<p>무신사채용공고</p>
-<p>Q8. 팀에 합류해 만들 첫 “작은 승리”는?</p>
-<p>결론: 중복 생성률과 P95 지연의 체감 개선입니다.</p>
-<p>Idempotency 키 + 재시도 백오프 도입, 원인 라벨링으로 고객센터/운영 TAT를 즉시 단축합니다. (주문 도메인 역할과 정합)</p>
-<p>무신사채용공고</p>
-<p>Q9. AI는 무엇에 쓰나요?</p>
-<p>결론: 반복 제거와 탐지 가속입니다.</p>
-<p>테스트 보일러플레이트 생성, 로그 패턴 탐지/요약, 정책 차이 검출에 AI를 활용해 개발 생산성과 품질을 동시에 끌어올립니다. (팀 문화 근거)</p></div><style data-emotion="css hx9xpc">@media (max-width: 768px){.css-hx9xpc{padding:0 20px;}}</style><div class="css-hx9xpc e1gqsjds0"></div><style data-emotion="css 9w9jmx">.css-9w9jmx{display:grid;place-items:center;margin-top:auto;padding:50px 0;font-size:15px;text-align:center;line-height:1.5;}@media (max-width: 768px){.css-9w9jmx{font-size:13px;}}</style><footer class="css-9w9jmx e1oae0v80"><br/>© 2025 Bruce Han, Powered By Gatsby.</footer></main></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/press-release/";/*]]>*/</script><!-- slice-start id="_gatsby-scripts-1" -->
+<p>주문은 사용자가 버튼을 연달아 누르거나 네트워크가 끊겼다가 재시도되면 같은 주문이 여러 번 생기는 일이 흔합니다.</p>
+<p>이에 대한 방안으로 세 가지를 들 수 있습니다.</p></div><style data-emotion="css hx9xpc">@media (max-width: 768px){.css-hx9xpc{padding:0 20px;}}</style><div class="css-hx9xpc e1gqsjds0"></div><style data-emotion="css 9w9jmx">.css-9w9jmx{display:grid;place-items:center;margin-top:auto;padding:50px 0;font-size:15px;text-align:center;line-height:1.5;}@media (max-width: 768px){.css-9w9jmx{font-size:13px;}}</style><footer class="css-9w9jmx e1oae0v80"><br/>© 2025 Bruce Han, Powered By Gatsby.</footer></main></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/press-release/";/*]]>*/</script><!-- slice-start id="_gatsby-scripts-1" -->
           <script
             id="gatsby-chunk-mapping"
           >
