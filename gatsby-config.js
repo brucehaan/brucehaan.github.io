@@ -2,8 +2,8 @@ module.exports = {
   siteMetadata: {
     title: `Brucehan의 블로그`,
     description: `백엔드 개발자로 살아남는 여정을 담았습니다.`,
-    author: `Hyun`,
-    siteUrl: 'https://my-website-link.com', // 배포 후 변경 예정
+    author: `Bruce Han`,
+    siteUrl: 'https://brucehaan.github.io', // 배포 후 변경 예정
   },
   plugins: [
     {
