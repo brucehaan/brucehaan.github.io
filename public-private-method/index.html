@@ -36,7 +36,7 @@
     <span class="token punctuation">}</span>
 
     <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token class-name">ProtectPrivateArrayByPublicMethod</span> innerData <span class="token operator">=</span> <span class="token class-name">ProtectPrivateArrayByPublicMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">ProtectPrivateArrayByPublicMethod</span> innerData <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ProtectPrivateArrayByPublicMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> outerData <span class="token operator">=</span> innerData<span class="token punctuation">.</span><span class="token function">getFruits</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         outerData<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"watermelon"</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
@@ -50,9 +50,9 @@
 <p>그러나 배열 요소 객체의 변경 가능성이 있다면(가변 객체라면) 얘기가 달라진다.</p>
 <p>그때는 새 배열 safeArray 안의 요소를 통해 객체 상태를 바꿀 수 있고, 그 객체를 참조하는 원본 배열에서도 변경이 가능하게 된다.</p>
 <p>이런 경우에는 배열 구조는 보호되지만, 요소의 상태는 노출되는 것이다.
-이때는 깊은 복사 또는 불변 뷰/래퍼까지 고려해야 한다.</p>
-<h3>Q. 불변 뷰/래퍼 예시도 들어주세요.</h3>
-<p>불변 뷰/래퍼는 <strong>외부에서 수정만 못 하게 막거나 읽기 전용으로만 노출</strong>하고 싶을 때 활용할 수 있다.</p>
+이때는 깊은 복사 또는 불변 래퍼까지 고려해야 한다.</p>
+<h3>Q. 불변 래퍼 예시도 들어주세요.</h3>
+<p>불변 래퍼는 <strong>외부에서 수정만 못 하게 막거나 읽기 전용으로만 노출</strong>하고 싶을 때 활용할 수 있다.</p>
 <h4>얕은 복사만 하는 경우의 문제 상황</h4>
 <p>먼저, 가변 객체에 대해 얕은 복사만 한 경우를 예시로 들겠다.
 가변 객체(도메인 클래스)를 선언하면 다음과 같다.</p>
@@ -92,7 +92,7 @@
 <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Address</span><span class="token punctuation">></span></span> outer <span class="token operator">=</span> info<span class="token punctuation">.</span><span class="token function">getAddresses</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 outer<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setCity</span><span class="token punctuation">(</span><span class="token string">"HackedCity"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 내부 객체 직접 수정</span>
 outer<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 내부 리스트 구조까지 변경 가능</span></code></pre></div>
-<p>이를 UserInfo쪽에서 불변 뷰(Unmodifiable Wrapper)로 가변 객체를 방어할 수 있다. 즉, 읽기 전용 뷰로 감싸는 게 된다.</p>
+<p>이를 UserInfo쪽에서 불변 래퍼(Unmodifiable Wrapper)로 가변 객체를 방어할 수 있다. 즉, 읽기 전용 래퍼로 감싸는 게 된다.</p>
 <div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserInfo</span> <span class="token punctuation">{</span>
     <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Address</span><span class="token punctuation">></span></span> addresses <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
@@ -119,7 +119,7 @@ outer<span class="token punctuation">.</span><span class="token function">add</s
 <p>이전까지만 해도 public 메소드에 의해 반환된 private 컬렉션(배열)에 대한 시큐어 코딩은 충분하다. 왜냐하면 위의 요점은 <strong>내부 배열 직접 노출하는 것을 막기</strong>이지, 지금부터 하는 것은 시큐어 코딩을 넘어서서 추가적인 궁금증에 대한 학습을 기록으로 남긴 것이다.</p>
 </blockquote>
 <p>요소까지 방어하고 싶다면 깊은 복사를 활용할 수 있다.
-깊은 복사만 활용하거나, 아니면 깊은 복사 + 불변 뷰까지 섞어서 활용할 수 있다.</p>
+깊은 복사만 활용하거나, 아니면 깊은 복사 + 불변 래퍼까지 섞어서 활용할 수 있다.</p>
 <h4>1. 깊은 복사 예시</h4>
 <div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token comment">/**
  * Copy Constructor를 둔 가변 클래스
@@ -172,8 +172,8 @@ outer<span class="token punctuation">.</span><span class="token function">remove
 <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>outer<span class="token punctuation">)</span><span class="token punctuation">;</span>       <span class="token comment">// 바뀐 건 복사본</span>
 <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>info<span class="token punctuation">.</span><span class="token function">getAddresses</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 원본은 그대로</span></code></pre></div>
 <p><strong>깊은 복사만 했을 때</strong>는 새 리스트로 구조를 보호할 수 있고, 요소 객체도 새 Address로 복제된다. 즉, 외부에서 수정할 때 내부에 영향을 안 미치는 deep copy가 된다.</p>
-<p>그러나 불변 뷰/래퍼 방식이나 얕은 복사에 비해 비용이 든다는 단점이 있다.</p>
-<h4>2. 깊은 복사 + 불변 뷰 섞은 예시</h4>
+<p>그러나 불변 래퍼 방식이나 얕은 복사에 비해 비용이 든다는 단점이 있다.</p>
+<h4>2. 깊은 복사 + 불변 래퍼 섞은 예시</h4>
 <div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 
 <span class="token keyword">public</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Address</span><span class="token punctuation">></span></span> <span class="token function">getAddresses</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -186,7 +186,7 @@ outer<span class="token punctuation">.</span><span class="token function">remove
 
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div>
 <p>이렇게 한다면, 방금 전 깊은 복사만 했을 때와 같이 외부에서는 구조를 변경할 수 없고 요소도 모두 복제된 객체라 원본을 오염시킬 수 없게 된다.</p>
-<h3>Q. 깊은 복사만 했을 때와 깊은 복사와 불변 뷰까지 했을 때의 차이가 뭔가요?</h3>
+<h3>Q. 깊은 복사만 했을 때와 깊은 복사와 불변 래퍼까지 했을 때의 차이가 뭔가요?</h3>
 <p><code class="language-text">unmodifiableList</code>를 사용하면서, 구조를 변경하려는 다른 사용자에게 읽기 전용이라고 코드 레벨에서 강제할 수 있다.
 즉, API를 사용할 때 실수나 오해까지 줄여줄 수 있다.</p>
 <h3>Q. 깊은 복사를 할 때의 비용은 어떤 비용을 말씀하시는 걸까요?</h3>
@@ -226,7 +226,37 @@ outer<span class="token punctuation">.</span><span class="token function">remove
 <p>deep copy를 하면 새 객체를 생성하게 되고, 사용한 뒤 금방 버려진다.
 그 결과로, GC 입장에서는 금방 죽는 객체들을 자주 치워야 해서 Minor GC 빈도가 증가하며, 이에 따라 Stop-the-world 시간이 조금씩 늘어나게 된다.</p>
 <p>요청이 많이 들어올 때, deep copy를 많이 반복하게 된다면 GC에 있어 병목이 발생할 수 있다.</p>
-<p>그에 비해 얕은 복사는 생성하는 객체 수가 훨씬 적어서 GC 부담도 상대적으로 적다.</p></div><div></div><style data-emotion="css 9w9jmx">.css-9w9jmx{display:grid;place-items:center;margin-top:auto;padding:50px 0;font-size:15px;text-align:center;line-height:1.5;}@media (max-width: 768px){.css-9w9jmx{font-size:13px;}}</style><footer class="css-9w9jmx e1oae0v80"><br/>© 2025 Bruce Han, Powered By Gatsby.</footer></main></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/public-private-method/";/*]]>*/</script><!-- slice-start id="_gatsby-scripts-1" -->
+<p>그에 비해 얕은 복사는 생성하는 객체 수가 훨씬 적어서 GC 부담도 상대적으로 적다.</p>
+<h3>Q. 불변 래퍼  예시에서 나왔던 Collections.unmodifiableList()는 쓰다가 List의 기본 capacity를 벗어나면 어떻게 되나요?</h3>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+<span class="token keyword">public</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Address</span><span class="token punctuation">></span></span> <span class="token function">getAddresses</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Address</span><span class="token punctuation">></span></span> copy <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>addresses<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Address</span> addr <span class="token operator">:</span> addresses<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        copy<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Address</span><span class="token punctuation">(</span>addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token class-name">Collections</span><span class="token punctuation">.</span><span class="token function">unmodifiableList</span><span class="token punctuation">(</span>copy<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div>
+<p>위 코드에서는 요소를 다 넣고 <code class="language-text">Collections.unmodifiableList(copy)</code>로 감싸서 반환한다.
+<code class="language-text">copy</code>에 요소를 더 이상 넣지 않고, capacity를 초과하는 추가 add가 발생하지 않는다. 즉, 내부 리사이즈 이슈 자체가 없다.
+설령 리사이즈가 일어나도 wrapper는 리스트 객체를 참조하고 있을 분, 내부 배열을 직접 참조하는 게 아니다.</p>
+<p>만약 capacity가 초과된다면 ArrayList는 내부적으로 새 배열을 만들고 갈아끼운다. 하지만, <code class="language-text">copy</code>라는 List 인스턴스는 그대로이고, unmodifiableList도 같은 인스턴스를 보고 있으므로 깨지지 않는다.
+다시 말해, 리사이즈가 일어나도 <code class="language-text">unmodifiableList</code>는 그 리스트 객체를 보고 있기 때문에, 내부 배열 교체는 외부 뷰를 깨지 않는다.</p>
+<p>따라서 리스트를 감싸는 <code class="language-text">Collections.unmodifiableList(list)</code>도 깨지지 않는다.</p>
+<h3>Q. 취약점 해결 소스를 for문 말고 람다식으로도 표현해주세요</h3>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProtectPrivateArrayByPublicMethod</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> fruits<span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">getFruits</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> fruits <span class="token operator">==</span> <span class="token keyword">null</span>
+               <span class="token operator">?</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+               <span class="token operator">:</span> <span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span>fruits<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">::</span><span class="token keyword">new</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>NullPointerException도 취약점 중 하나이니, 이를 방어하면서 stream으로 한 줄로 표현할 수 있다.</p></div><div></div><style data-emotion="css 9w9jmx">.css-9w9jmx{display:grid;place-items:center;margin-top:auto;padding:50px 0;font-size:15px;text-align:center;line-height:1.5;}@media (max-width: 768px){.css-9w9jmx{font-size:13px;}}</style><footer class="css-9w9jmx e1oae0v80"><br/>© 2025 Bruce Han, Powered By Gatsby.</footer></main></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/public-private-method/";/*]]>*/</script><!-- slice-start id="_gatsby-scripts-1" -->
           <script
             id="gatsby-chunk-mapping"
           >
